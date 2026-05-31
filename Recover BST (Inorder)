@@ -1,0 +1,117 @@
+import java.util.*;
+
+public class Main
+{
+    static class Node
+    {
+        int data;
+        Node left, right;
+
+        Node(int d)
+        {
+            data = d;
+        }
+    }
+
+    static Node first, middle, last, prev;
+
+    static void correctBST(Node root)
+    {
+        first = middle = last = prev = null;
+
+        correctBSTUtil(root);
+
+        if (last == null)
+            swap(first, middle);
+        else
+            swap(first, last);
+    }
+
+    static void correctBSTUtil(Node root)
+    {
+        if (root == null)
+            return;
+
+        correctBSTUtil(root.left);
+
+        if (prev != null && root.data < prev.data)
+        {
+            if (first == null)
+            {
+                first = prev;
+                middle = root;
+            }
+            else
+            {
+                last = root;
+            }
+        }
+
+        prev = root;
+
+        correctBSTUtil(root.right);
+    }
+
+    static void swap(Node a, Node b)
+    {
+        int temp = a.data;
+        a.data = b.data;
+        b.data = temp;
+    }
+
+    static void printInorder(Node root)
+    {
+        if (root == null)
+            return;
+
+        printInorder(root.left);
+        System.out.print(root.data + " ");
+        printInorder(root.right);
+    }
+
+    static Node buildTree(String[] values)
+    {
+        if (values.length == 0 || values[0].equals("null"))
+            return null;
+
+        Node root = new Node(Integer.parseInt(values[0]));
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+
+        int i = 1;
+
+        while (!q.isEmpty() && i < values.length)
+        {
+            Node curr = q.poll();
+
+            if (i < values.length && !values[i].equals("null"))
+            {
+                curr.left = new Node(Integer.parseInt(values[i]));
+                q.add(curr.left);
+            }
+            i++;
+
+            if (i < values.length && !values[i].equals("null"))
+            {
+                curr.right = new Node(Integer.parseInt(values[i]));
+                q.add(curr.right);
+            }
+            i++;
+        }
+
+        return root;
+    }
+
+    public static void main(String[] args)
+    {
+        Scanner sc = new Scanner(System.in);
+
+        String[] input = sc.nextLine().split(" ");
+
+        Node root = buildTree(input);
+
+        correctBST(root);
+
+        printInorder(root);
+    }
+}
